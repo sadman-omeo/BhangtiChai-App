@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: .fromSeed(seedColor: Colors.green),
       ),
       home: const MyHomePage(title: 'Bhangti Chai App'),
     );
@@ -104,15 +104,63 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
   @override
+  Widget build(BuildContext context) {
+
+    Orientation orientation = MediaQuery.of(context).orientation;
+    return Scaffold(
+      appBar: AppBar(
+
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+
+        title: Text(widget.title),
+      ),
+
+
+
+      //stateless Widget printed on UI
+
+      //Now time for statefull widgets
+
+      body: SafeArea(
+        child: Column(
+
+          children: [
+            SizedBox(height : 30),
+            Text(
+              "Taka : $amount",
+              style: TextStyle(fontSize: 25),
+            ),
+            SizedBox(height: 200),
+            Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                        child: buildChangePart()
+                    ),
+                    Expanded(
+                        child: buildKeypad()
+                    ),
+                  ],
+                ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget buildKeyButton(String text, VoidCallback onPressed) {
     return Expanded(
         child: Padding(
-          padding: EdgeInsets.all(8),
-          child: ElevatedButton(
-            onPressed : onPressed,
-            child: Text(
-              text,
-              style: TextStyle(fontSize: 24),
+          padding: EdgeInsets.all(6),
+          child : AspectRatio(
+            aspectRatio: 2,
+            child: ElevatedButton(
+              onPressed : onPressed,
+              child: Text(
+                text,
+                style: TextStyle(fontSize: 20),
+              ),
             ),
           ),
         ),
@@ -121,6 +169,73 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
   Widget buildKeypad() {
-    retu
+    return Column(
+      children: [
+        Row(
+          children: [
+            buildKeyButton("1", () => addNum(1)),
+            buildKeyButton("2", () => addNum(2)),
+            buildKeyButton("3", () => addNum(3))
+          ],
+        ),
+        Row(
+          children: [
+            buildKeyButton("4", () => addNum(4)),
+            buildKeyButton("5", () => addNum(5)),
+            buildKeyButton("6", () => addNum(6))
+          ],
+        ),
+        Row(
+          children: [
+            buildKeyButton("7", () => addNum(7)),
+            buildKeyButton("8", () => addNum(8)),
+            buildKeyButton("9", () => addNum(9))
+          ],
+        ),
+        Row(
+          children: [
+            buildKeyButton("0", () => addNum(0)),
+            buildKeyButton("Clear", () => clear())
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget buildChangePart() {
+
+    Map<int, int> change = change_calculation(amount);
+    List<Widget> rows = [];
+
+    List<int> notes = [500, 100, 50, 20, 10, 5, 2, 1];
+
+    for (int i = 0; i < notes.length; i++) {
+      int note = notes[i];
+      int count = change[note]!; // ! tihs is the count form the map
+
+      rows.add(
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 2),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("$note : $count", style: TextStyle(fontSize: 30)),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.white),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: rows,
+      ),
+    );
   }
 }
