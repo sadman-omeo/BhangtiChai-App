@@ -61,7 +61,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void addNum(int digit) {
     setState(() {
       amount = amount * 10 + digit;
-
     });
   }
 
@@ -80,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     for (int i in notes) {
       int count = remaining ~/ i; //division sign eta
-      change[i] = count;  //change namok dict ta update korlam
+      change[i] = count; //change namok dict ta update korlam
       remaining = remaining % i;
     }
 
@@ -105,8 +104,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     Orientation orientation = MediaQuery.of(context).orientation;
+
     return Scaffold(
       appBar: AppBar(
 
@@ -116,59 +115,107 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
 
 
-
       //stateless Widget printed on UI
 
       //Now time for statefull widgets
 
       body: SafeArea(
-        child: Column(
+        child: orientation == Orientation.portrait
+            ? buildPortraitLayout()
+            : buildLandscapeLayout(),
+      ),
+    );
+  }
 
-          children: [
-            SizedBox(height : 30),
-            Text(
-              "Taka : $amount",
-              style: TextStyle(fontSize: 25),
+  Widget buildPortraitLayout() {
+    return Column(
+      children: [
+        SizedBox(height: 30),
+        Text(
+          "Taka : $amount",
+          style: TextStyle(fontSize: 20),
+        ),
+        SizedBox(height: 200),
+        Expanded(
+          child: Row(
+            children: [
+              Expanded(
+                  child: buildChangePart()
+              ),
+              Expanded(
+                  child: buildKeypadportrait()
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildLandscapeLayout() {
+    return Column(
+      children: [
+        SizedBox(height: 0),
+        Text(
+          "Taka : $amount",
+          style: TextStyle(fontSize: 20),
+        ),
+        SizedBox(height: 10),
+        Expanded(
+          child: Row(
+            children: [
+              Expanded(
+                  child: buildChangePart2()
+              ),
+              Expanded(
+                  child: buildKeypadlandscape()
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  Widget buildKeyButton(String text, VoidCallback onPressed) {
+    return Expanded(
+      child: Padding(
+        padding: EdgeInsets.all(3),
+        child: AspectRatio(
+          aspectRatio: 2,
+          child: ElevatedButton(
+            onPressed: onPressed,
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 17),
             ),
-            SizedBox(height: 200),
-            Expanded(
-                child: Row(
-                  children: [
-                    Expanded(
-                        child: buildChangePart()
-                    ),
-                    Expanded(
-                        child: buildKeypad()
-                    ),
-                  ],
-                ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget buildKeyButton(String text, VoidCallback onPressed) {
+  Widget buildKeyButtonland(String text, VoidCallback onPressed) {
     return Expanded(
-        child: Padding(
-          padding: EdgeInsets.all(6),
-          child : AspectRatio(
-            aspectRatio: 2,
-            child: ElevatedButton(
-              onPressed : onPressed,
-              child: Text(
-                text,
-                style: TextStyle(fontSize: 20),
-              ),
+      child: Padding(
+        padding: EdgeInsets.all(6),
+        child: AspectRatio(
+          aspectRatio: 3,
+          child: ElevatedButton(
+            onPressed: onPressed,
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 12),
             ),
           ),
         ),
+      ),
     );
+
   }
 
-
-  Widget buildKeypad() {
+  Widget buildKeypadportrait() {
     return Column(
       children: [
         Row(
@@ -178,6 +225,7 @@ class _MyHomePageState extends State<MyHomePage> {
             buildKeyButton("3", () => addNum(3))
           ],
         ),
+        SizedBox(height: 30),
         Row(
           children: [
             buildKeyButton("4", () => addNum(4)),
@@ -185,6 +233,7 @@ class _MyHomePageState extends State<MyHomePage> {
             buildKeyButton("6", () => addNum(6))
           ],
         ),
+        SizedBox(height: 30),
         Row(
           children: [
             buildKeyButton("7", () => addNum(7)),
@@ -192,6 +241,7 @@ class _MyHomePageState extends State<MyHomePage> {
             buildKeyButton("9", () => addNum(9))
           ],
         ),
+        SizedBox(height: 30),
         Row(
           children: [
             buildKeyButton("0", () => addNum(0)),
@@ -202,8 +252,42 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget buildChangePart() {
 
+  Widget buildKeypadlandscape() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            buildKeyButtonland("1", () => addNum(1)),
+            buildKeyButtonland("2", () => addNum(2)),
+            buildKeyButtonland("3", () => addNum(3))
+          ],
+        ),
+        Row(
+          children: [
+            buildKeyButtonland("4", () => addNum(4)),
+            buildKeyButtonland("5", () => addNum(5)),
+            buildKeyButtonland("6", () => addNum(6))
+          ],
+        ),
+        Row(
+          children: [
+            buildKeyButtonland("7", () => addNum(7)),
+            buildKeyButtonland("8", () => addNum(8)),
+            buildKeyButtonland("9", () => addNum(9))
+          ],
+        ),
+        Row(
+          children: [
+            buildKeyButtonland("0", () => addNum(0)),
+            buildKeyButtonland("Clear", () => clear())
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget buildChangePart() {
     Map<int, int> change = change_calculation(amount);
     List<Widget> rows = [];
 
@@ -235,6 +319,67 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: rows,
+      ),
+    );
+  }
+
+
+  Widget buildChangePart2() {
+    Map<int, int> change = change_calculation(amount);
+
+    List<int> leftNotes = [500, 100, 50, 20];
+    List<int> rightNotes = [10, 5, 2, 1];
+
+    List<Widget> leftRows = [];
+    List<Widget> rightRows = [];
+
+    // Build left column
+    for (int i = 0; i < leftNotes.length; i++) {
+      int note = leftNotes[i];
+      int count = change[note]!;
+
+      leftRows.add(
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 6),
+          child: Text(
+            "$note : $count",
+            style: TextStyle(fontSize: 26),
+          ),
+        ),
+      );
+    };
+
+
+    // Build right column
+    for (int i = 0; i < rightNotes.length; i++) {
+      int note = rightNotes[i];
+      int count = change[note]!;
+
+      rightRows.add(
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 6),
+          child: Text(
+            "$note : $count",
+            style: TextStyle(fontSize: 26),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      padding: EdgeInsets.all(12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: leftRows,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: rightRows,
+          ),
+        ],
       ),
     );
   }
