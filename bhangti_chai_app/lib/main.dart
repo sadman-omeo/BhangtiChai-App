@@ -133,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
         SizedBox(height: 30),
         Text(
           "Taka : $amount",
-          style: TextStyle(fontSize: 20),
+          style: TextStyle(fontSize: 30),
         ),
         SizedBox(height: 200),
         Expanded(
